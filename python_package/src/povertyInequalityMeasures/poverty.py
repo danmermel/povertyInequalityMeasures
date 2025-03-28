@@ -31,5 +31,24 @@ def get_poverty_severity_index(pl, data, target_col, weight_col):
     for i in range(0,total_sample):
         data.loc[i,"poverty_gap_squared"] = (max(0, (pl-data.loc[i,target_col])/pl))**2
     poverty_severity_index = (data["poverty_gap_squared"]*data[weight_col]).sum() / total_sample_weighted
-    #print(data)
+    print(data)
     return round(poverty_severity_index,5)
+
+def get_poverty_severity_index_generic(pl, data, target_col, weight_col,alpha):
+    #pl is the poverty line
+    #data is a dataframe containing survey data
+    # alpha is the measure of the sensitivity of the index to poverty.Alpha has to be >=o
+    if alpha < 0:
+        return "Error. Alpha must be >=0"
+    total_sample = data.shape[0] # number of rows
+    total_sample_weighted = data[weight_col].sum()
+    for i in range(0,total_sample):
+        if pl-data.loc[i,target_col] < 0:
+            #above the poverty line
+            data.loc[i,"poverty_gap_alpha"] = 0
+        else:
+            #below the poverty line 
+            data.loc[i,"poverty_gap_alpha"] = ((pl-data.loc[i,target_col])/pl)**alpha
+    poverty_severity_index_generic = (data["poverty_gap_alpha"]*data[weight_col]).sum() / total_sample_weighted
+    print(data)
+    return round(poverty_severity_index_generic,5)
