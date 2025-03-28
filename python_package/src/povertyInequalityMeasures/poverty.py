@@ -52,3 +52,13 @@ def get_poverty_severity_index_generic(pl, data, target_col, weight_col,alpha):
     poverty_severity_index_generic = (data["poverty_gap_alpha"]*data[weight_col]).sum() / total_sample_weighted
     print(data)
     return round(poverty_severity_index_generic,5)
+
+def get_sen_index(pl,data, target_col, weight_col):
+    pov_headcount = get_headcount_index(pl,data, target_col, weight_col)
+    print(pov_headcount)
+    pov_gap = get_poverty_gap_index(pl,data, target_col, weight_col)
+    print(pov_gap)
+    #for now let's just make Ginni a constant until i figure out how to calculate it
+    gini = 0.7
+    sen_index = pov_headcount*gini + pov_gap*(1-gini)
+    return sen_index

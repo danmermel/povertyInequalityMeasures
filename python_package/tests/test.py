@@ -59,5 +59,14 @@ class TestPovertyMeasures(unittest.TestCase):
         result = poverty.get_poverty_severity_index_generic(poverty_line, data, "total_expenditure","weight",2)
         self.assertEqual(result, 0.0136)
 
+def test_sen_index(self):
+        """
+        Test the sen index function
+        """
+        data = pd.DataFrame({'total_expenditure': [ 110,120,150,160], 'weight':[1,1,1,1]})
+        poverty_line= 125
+        result = poverty.get_sen_index(poverty_line, data, "total_expenditure","weight")
+        self.assertEqual(result, 0.374)
+
 if __name__ == '__main__':
     unittest.main()
