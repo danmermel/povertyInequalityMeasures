@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "povertyInequalityMeasures"
-version = "0.0.3"
+version = "0.0.5"
 authors = [
   { name="Daniel Mermelstein", email="danmermel@gmail.com" },
 ]
