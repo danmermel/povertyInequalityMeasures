@@ -1,4 +1,5 @@
 import math
+from povertyInequalityMeasures import inequality
 
 def get_headcount_index(pl,data,target_col,weight_col):
     #pl is the poverty line
@@ -60,8 +61,7 @@ def get_sen_index(pl,data, target_col, weight_col):
     #print(pov_headcount)
     pov_gap = get_poverty_gap_index(pl,data, target_col, weight_col)
     #print(pov_gap)
-    #for now let's just make Ginni a constant until i figure out how to calculate it
-    gini = 0.7
+    gini = inequality.get_gini(data, target_col, weight_col)
     sen_index = pov_headcount*gini + pov_gap*(1-gini)
     return sen_index
 
