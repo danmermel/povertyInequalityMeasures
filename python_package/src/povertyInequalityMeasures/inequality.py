@@ -59,8 +59,6 @@ def get_palma(data,target_col,weight_col):
     accumulated_target_per_decile = sorted_data.groupby(['bins'], observed=False)['TARGET_ACCUM'].agg(['max'])
     #print (accumulated_income_per_decile)
     target_per_decile = (sorted_data.groupby(['bins'],observed=False)['TARGET_WEIGHTED'].agg(['sum']))  
-    #print(income_per_decile)
-    print(type(target_per_decile))
     palma = float(target_per_decile.iloc[9].iloc[0]) / float(accumulated_target_per_decile.iloc[3].iloc[0])
     # in other words the amount that the top decile has of the thing you are measuring divided by the amount that the bottom 4 deciles have
     return round(palma,2)
