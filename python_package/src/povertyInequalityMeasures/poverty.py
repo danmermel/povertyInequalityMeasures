@@ -1,4 +1,3 @@
-import math
 from povertyInequalityMeasures import inequality
 import numpy as np
 
@@ -75,7 +74,7 @@ def get_watts_index (pl, data,target_col, weight_col):
 
 def get_time_to_exit(pl,data, growth, target_col):
     total_sample = data.shape[0] # number of rows
-    data["time_to_exit"] = data[target_col].apply(lambda x: round((np.log(pl/x))/growth,2) if x<pl else null )
+    data["time_to_exit"] = data[target_col].apply(lambda x: round((np.log(pl/x))/growth,2) if x<pl else 0 )
     # for i in range(0,total_sample):
     #     if data.loc[i, target_col] < pl:
     #         #add a time to exit to that row

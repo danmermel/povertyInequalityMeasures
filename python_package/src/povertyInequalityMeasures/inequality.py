@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def get_gini(data,target_col,weight_col):
     nrows = data.shape[0] # count of rows
@@ -10,25 +11,23 @@ def get_gini(data,target_col,weight_col):
     #print(sorted_data)
     #now do accuumulation for the thing you are sorting, because this is all about cumulative income/expenditure/whatever
     #baseline the first row
-    sorted_data.loc[0,"POPN_ACCUM"] = sorted_data.loc[0,weight_col]
-    sorted_data.loc[0, "TARGET_ACCUM"] = sorted_data.loc[0, target_col]*sorted_data.loc[0, weight_col]
 
-    #now start accumulating 
-    for i in range(1,nrows):
-        sorted_data.loc[i,"POPN_ACCUM"] = sorted_data.loc[i-1,"POPN_ACCUM"] + sorted_data.loc[i, weight_col]
-        sorted_data.loc[i, "TARGET_ACCUM"] = sorted_data.loc[i-1, "TARGET_ACCUM"] + sorted_data.loc[i, target_col]*sorted_data.loc[i, weight_col]
-
-    #print(sorted_data)
+    sorted_data["POPN_ACCUM"] = sorted_data[weight_col].cumsum()
+    sorted_data["TARGET_ACCUM"] = (sorted_data[target_col] * sorted_data[weight_col]).cumsum()
+    print(sorted_data)
     # now work out the gini
-    lastr = sorted_data.iloc[-1:] # last entry, which contains total of the target and total population
-    total_area = lastr["TARGET_ACCUM"] * lastr["POPN_ACCUM"] 
-    lorenz_area = sorted_data.loc[0,"POPN_ACCUM"] * sorted_data.loc[0,"TARGET_ACCUM"] #initialize with the first (0th) value
-    for i in range(1,nrows):
-        lorenz_area +=  (sorted_data.loc[i,"POPN_ACCUM"]-sorted_data.loc[i-1,"POPN_ACCUM"]) * (sorted_data.loc[i,"TARGET_ACCUM"] + sorted_data.loc[i-1,"TARGET_ACCUM"])
-            
-    #print(total_area, lorenz_area)
-    gini = (total_area-lorenz_area) / total_area
-    return float(round(gini.iloc[0],2))
+
+    # Shifted versions of the columns
+    popn = sorted_data["POPN_ACCUM"].values
+    target = sorted_data["TARGET_ACCUM"].values
+
+    #Use vectorized trapezoidal rule
+    lorenz_area = np.sum((popn[1:] - popn[:-1]) * (target[1:] + target[:-1]))
+    print(lorenz_area)
+    lorenz_area /= (popn[-1] * target[-1])  # Normalize
+    print(lorenz_area)
+    gini = 1 - lorenz_area
+    return round(gini,2)
 
 def get_palma(data,target_col,weight_col):
     nrows = data.shape[0] # count of rows

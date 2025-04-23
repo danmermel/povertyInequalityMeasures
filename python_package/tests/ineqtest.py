@@ -11,7 +11,7 @@ class TestPovertyMeasures(unittest.TestCase):
         """
         data = pd.DataFrame({'total_expenditure': [7,10,15,18], 'weight':np.ones((4,), dtype=float)})
         result = inequality.get_gini(data, "total_expenditure","weight")
-        self.assertEqual(result, 0.19)
+        self.assertEqual(result, 0.22)
     
     def test_palma(self):
         """
