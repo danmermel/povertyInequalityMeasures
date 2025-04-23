@@ -1,5 +1,6 @@
 import math
 from povertyInequalityMeasures import inequality
+import numpy as np
 
 def get_headcount_index(pl,data,target_col,weight_col):
     #pl is the poverty line
@@ -30,8 +31,8 @@ def get_poverty_severity_index(pl, data, target_col, weight_col):
     #data is a dataframe containing survey data
     total_sample = data.shape[0] # number of rows
     total_sample_weighted = data[weight_col].sum()
-    for i in range(0,total_sample):
-        data.loc[i,"poverty_gap_squared"] = (max(0, (pl-data.loc[i,target_col])/pl))**2
+    print("new method2")
+    data["poverty_gap_squared"] = (((pl - data[target_col]) / pl).clip(lower=0))**2
     poverty_severity_index = (data["poverty_gap_squared"]*data[weight_col]).sum() / total_sample_weighted
     #print(data)
     return round(poverty_severity_index,5)
@@ -44,13 +45,8 @@ def get_poverty_severity_index_generic(pl, data, target_col, weight_col,alpha):
         return "Error. Alpha must be >=0"
     total_sample = data.shape[0] # number of rows
     total_sample_weighted = data[weight_col].sum()
-    for i in range(0,total_sample):
-        if pl-data.loc[i,target_col] < 0:
-            #above the poverty line
-            data.loc[i,"poverty_gap_alpha"] = 0
-        else:
-            #below the poverty line 
-            data.loc[i,"poverty_gap_alpha"] = ((pl-data.loc[i,target_col])/pl)**alpha
+    print("new method2")
+    data["poverty_gap_alpha"] = data[target_col].apply(lambda x: ((pl - x)/pl)**alpha if (pl - x) > 0 else 0)
     poverty_severity_index_generic = (data["poverty_gap_alpha"]*data[weight_col]).sum() / total_sample_weighted
     #print(data)
     return round(poverty_severity_index_generic,5)
@@ -68,18 +64,21 @@ def get_watts_index (pl, data,target_col, weight_col):
     total_sample = data.shape[0] # number of rows
     total_sample_weighted = data[weight_col].sum()  #number of actual people the sample represents
     watts_total=0 # to contain our adding of the totals below
-    for i in range(0,total_sample):
-        if data.loc[i, target_col] < pl:
-            ## add it to the total according to the Watts formula, because the sum is over individuals whose income/expenditure falls below the pl
-            watts_total += (math.log(pl/data.loc[i,target_col]))*data.loc[i,weight_col]
+
+    mask = data[target_col] < pl 
+    # Creates a boolean Series marking which rows are below the poverty line. 
+    # Then uses only those to add to the watts total
+    watts_total = np.sum(np.log(pl / data.loc[mask, target_col]) * data.loc[mask, weight_col])
     #finally divide by the total sample
     watts_total = watts_total / total_sample_weighted
     return round(watts_total,5)
 
 def get_time_to_exit(pl,data, growth, target_col):
     total_sample = data.shape[0] # number of rows
-    for i in range(0,total_sample):
-        if data.loc[i, target_col] < pl:
-            #add a time to exit to that row
-            data.loc[i, "time_to_exit"] = round((math.log(pl/data.loc[i,target_col]))/growth,2)
+    data["time_to_exit"] = data[target_col].apply(lambda x: round((np.log(pl/x))/growth,2) if x<pl else null )
+    # for i in range(0,total_sample):
+    #     if data.loc[i, target_col] < pl:
+    #         #add a time to exit to that row
+    #         data.loc[i, "time_to_exit"] = round((math.log(pl/data.loc[i,target_col]))/growth,2)
+    print (data)
     return data
