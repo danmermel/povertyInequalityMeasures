@@ -14,7 +14,7 @@ def get_gini(data,target_col,weight_col):
 
     sorted_data["POPN_ACCUM"] = sorted_data[weight_col].cumsum()
     sorted_data["TARGET_ACCUM"] = (sorted_data[target_col] * sorted_data[weight_col]).cumsum()
-    print(sorted_data)
+    #print(sorted_data)
     # now work out the gini
 
     # Shifted versions of the columns
@@ -23,9 +23,8 @@ def get_gini(data,target_col,weight_col):
 
     #Use vectorized trapezoidal rule
     lorenz_area = np.sum((popn[1:] - popn[:-1]) * (target[1:] + target[:-1]))
-    print(lorenz_area)
     lorenz_area /= (popn[-1] * target[-1])  # Normalize
-    print(lorenz_area)
+    #print(lorenz_area)
     gini = 1 - lorenz_area
     return round(gini,2)
 

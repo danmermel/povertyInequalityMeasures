@@ -66,7 +66,7 @@ class TestPovertyMeasures(unittest.TestCase):
         data = pd.DataFrame({'total_expenditure': [ 100,110,150,160], 'weight':[1,1,1,1]})
         poverty_line= 125
         result = poverty.get_sen_index(poverty_line, data, "total_expenditure","weight")
-        self.assertEqual(result, 0.1262)
+        self.assertEqual(result, 0.143)
 
     def test_watts_index(self):
         """

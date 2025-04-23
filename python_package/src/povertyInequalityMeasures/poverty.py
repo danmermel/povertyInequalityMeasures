@@ -57,7 +57,7 @@ def get_sen_index(pl,data, target_col, weight_col):
     #print(pov_gap)
     gini = inequality.get_gini(data, target_col, weight_col)
     sen_index = pov_headcount*gini + pov_gap*(1-gini)
-    return sen_index
+    return round(sen_index,3)
 
 def get_watts_index (pl, data,target_col, weight_col):
     total_sample = data.shape[0] # number of rows
