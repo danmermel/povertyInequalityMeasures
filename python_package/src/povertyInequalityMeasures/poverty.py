@@ -20,10 +20,9 @@ def get_poverty_gap_index(pl,data,target_col, weight_col):
     #data is a dataframe containing survey data
     total_sample = data.shape[0] # number of rows
     total_sample_weighted = data[weight_col].sum()
-    for i in range(0,total_sample):
-        data.loc[i,"poverty_gap"] = max(0, (pl-data.loc[i,target_col])/pl)
+    print("new method")
+    data["poverty_gap"] = data[target_col].apply(lambda x:(pl-x)/pl if ((pl-x)/pl) >0 else 0 )
     poverty_gap_index = (data["poverty_gap"]*data[weight_col]).sum() / total_sample_weighted
-    #print(data)
     return round(poverty_gap_index,5)
 
 def get_poverty_severity_index(pl, data, target_col, weight_col):
