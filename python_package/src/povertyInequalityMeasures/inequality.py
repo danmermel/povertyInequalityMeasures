@@ -10,8 +10,6 @@ def get_gini(data,target_col,weight_col):
     sorted_data = data.sort_values(by=target_col).reset_index(drop=True)
     #print(sorted_data)
     #now do accuumulation for the thing you are sorting, because this is all about cumulative income/expenditure/whatever
-    #baseline the first row
-
     sorted_data["POPN_ACCUM"] = sorted_data[weight_col].cumsum()
     sorted_data["TARGET_ACCUM"] = (sorted_data[target_col] * sorted_data[weight_col]).cumsum()
     #print(sorted_data)
@@ -37,18 +35,10 @@ def get_palma(data,target_col,weight_col):
     sorted_data = data.sort_values(by=target_col).reset_index(drop=True)
     #print(sorted_data)
     #now do accuumulation for the thing you are sorting, because this is all about cumulative income/expenditure/whatever
-    
-    #baseline the first row
-    sorted_data.loc[0,"POPN_ACCUM"] = sorted_data.loc[0,weight_col] # population accumulator
-    sorted_data.loc[0, "TARGET_ACCUM"] = sorted_data.loc[0, target_col]*sorted_data.loc[0, weight_col]  # the thing you are measuring, accumulated
-    sorted_data.loc[0, "TARGET_WEIGHTED"] = sorted_data.loc[0, target_col]*sorted_data.loc[0, weight_col] #the thing you are measuring, but weighted
 
-
-    #now start accumulating 
-    for i in range(1,nrows):
-        sorted_data.loc[i,"POPN_ACCUM"] = sorted_data.loc[i-1,"POPN_ACCUM"] + sorted_data.loc[i, weight_col]
-        sorted_data.loc[i, "TARGET_ACCUM"] = sorted_data.loc[i-1, "TARGET_ACCUM"] + sorted_data.loc[i, target_col]*sorted_data.loc[i, weight_col]
-        sorted_data.loc[i, "TARGET_WEIGHTED"] = sorted_data.loc[i, target_col]*sorted_data.loc[i, weight_col]
+    sorted_data["POPN_ACCUM"] = sorted_data[weight_col].cumsum()
+    sorted_data["TARGET_ACCUM"] = (sorted_data[target_col] * sorted_data[weight_col]).cumsum()
+    sorted_data["TARGET_WEIGHTED"] = sorted_data.apply(lambda row: row[target_col]*row[weight_col], axis=1) #the thing you are measuring, but weighted
     #print(sorted_data)
 
     #now work out the palma
